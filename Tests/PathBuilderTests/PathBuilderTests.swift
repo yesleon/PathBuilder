@@ -1,8 +1,10 @@
 import XCTest
 @testable import PathBuilder
 
-protocol Uppercased: PathComponentProviding { }
-extension Uppercased {
+protocol DoNotLowercase: PathComponentProviding { }
+
+extension DoNotLowercase {
+    
     static var pathComponent: String { "\(self)" }
 }
 
@@ -14,7 +16,8 @@ extension String: PathComponentAppending {
     }
 }
 
-enum PathBuilders {
+enum Paths {
+    
     static let motcV2: PathBuilder<URLRequest, MOTCV2> = {
         var components = URLComponents()
         components.scheme = "https"
@@ -28,69 +31,61 @@ enum PathBuilders {
         )
         return .init(path: request)
     }()
-    
 }
+
 struct MOTCV2 {
     var bike: Bike
 }
 
-struct RealTimeByFrequency {
-    var streaming: Streaming
-}
-struct Streaming {
-    var city: City
-    struct City {
-        var cityID: CityID
-        enum CityID: String, Endpoint {
-             
-            typealias Value = String
-            
-            case hsinchu = "Hsinchu"
-        }
-    }
-}
-
-struct Bike: Uppercased {
+struct Bike: DoNotLowercase {
     var availability: Availability
 }
 
-struct Availability: Uppercased {
+struct Availability: DoNotLowercase {
     var city: City
-    enum City: String, DecodableEndpoint {
-        static var defaultDecoder: JSONDecoder {
-            return JSONDecoder()
-        }
-        
-        typealias Value = [ValueItem]
-        struct ValueItem: Codable {
-            let stationUID, stationID: String
-            let serviceAvailable, availableRentBikes, availableReturnBikes: Int
-            let srcUpdateTime, updateTime: String
+}
 
-            enum CodingKeys: String, CodingKey {
-                case stationUID = "StationUID"
-                case stationID = "StationID"
-                case serviceAvailable = "ServiceAvailable"
-                case availableRentBikes = "AvailableRentBikes"
-                case availableReturnBikes = "AvailableReturnBikes"
-                case srcUpdateTime = "SrcUpdateTime"
-                case updateTime = "UpdateTime"
-            }
-        }
-        
-        case tainan = "Tainan"
+enum City: String {
+    case tainan = "Tainan"
+}
+
+extension City: DecodableEndpoint {
+    
+    typealias Value = [ValueItem]
+    
+    static var defaultDecoder: JSONDecoder {
+        return JSONDecoder()
     }
 }
 
+struct ValueItem: Codable {
+    let stationUID, stationID: String
+    let serviceAvailable, availableRentBikes, availableReturnBikes: Int
+    let srcUpdateTime, updateTime: String
+
+    enum CodingKeys: String, CodingKey {
+        case stationUID = "StationUID"
+        case stationID = "StationID"
+        case serviceAvailable = "ServiceAvailable"
+        case availableRentBikes = "AvailableRentBikes"
+        case availableReturnBikes = "AvailableReturnBikes"
+        case srcUpdateTime = "SrcUpdateTime"
+        case updateTime = "UpdateTime"
+    }
+}
 
 final class PathBuilderTests: XCTestCase {
+    
     var sub: Any?
+    
     func testExample() {
         
         let expectation = XCTestExpectation(description: "test")
         
+        print(Paths.motcV2.bike.availability.city(.tainan))
+        
         sub = URLSession.shared
-            .dataTaskPublisher(for: PathBuilders.motcV2.bike.availability.city(.tainan))
+            .dataTaskPublisher(for: Paths.motcV2.bike.availability.city(.tainan))
             .sink { completion in
                 
                 print(completion)
