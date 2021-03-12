@@ -67,7 +67,7 @@ let baseURL = URL(string: "https://ptx.transportdata.tw/MOTC/v2")!
 let motcV2 = PathBuilder(path: baseURL, modelType: MOTCV2.self)
 ```
 
-Now you can create URL requests like this:
+Now you can create URL like this:
 
 ```swift
 
