@@ -1,13 +1,14 @@
 
+
+public protocol PathComponentAppending {
+    func appendingPathComponent(_ pathComponent: String) -> Self
+}
+
 public protocol PathComponentProviding {
     static var pathComponent: String { get }
 }
 
 public protocol Endpoint { }
-
-public protocol PathComponentAppending {
-    func appendingPathComponent(_ pathComponent: String) -> Self
-}
 
 @dynamicMemberLookup
 public struct PathBuilder<P: PathComponentAppending, Model> {
@@ -44,6 +45,7 @@ public struct PathBuilder<P: PathComponentAppending, Model> {
 }
 
 extension PathBuilder where Model: Endpoint {
+    
     func build() -> P {
         return _path
     }
