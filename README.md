@@ -102,7 +102,7 @@ extension City: DecodableEndpoint {
 }
 
 let sub = URLSession.shared
-    .decodedDataTaskPublisher(for: Paths.motcV2.bike.availability.city(.tainan))
+    .decodedDataTaskPublisher(for: motcV2.bike.availability.city(.tainan))
     .sink { completion in
 
         print(completion)
