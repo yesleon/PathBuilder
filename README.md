@@ -12,7 +12,9 @@ let url = URL(string: "https://ptx.transportdata.tw/MOTC/v2/Bike/Availability/Ta
 Write this:
 
 ```swift
-let url = Paths.motcV2.bike.availability.city(.tainan).build()
+let motcV2 = PathBuilder(path: url, modelType: MOTCV2.self)
+
+let endpointRequest: URL = motcV2.bike.availability.city(.tainan)
 ```
 
 Autocomplete fully supported!
