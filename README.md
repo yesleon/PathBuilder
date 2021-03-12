@@ -1,6 +1,6 @@
 # PathBuilder
 
-Model API endpoints with Swift types.
+Bring Type Safety of Swift to HTTP endpoints, file paths, and more.
 
 Instead of this:
 
