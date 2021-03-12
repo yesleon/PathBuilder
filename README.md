@@ -56,6 +56,40 @@ Make the last type conform to `Endpoint` or `DecodableEndpoint`:
 
 ```swift
 
+extension City: Endpoint { }
+```
+
+Declare a builder:
+
+```swift
+
+let baseURL = URL(string: "https://ptx.transportdata.tw/MOTC/v2")!
+let motcV2 = PathBuilder(path: baseURL, modelType: MOTCV2.self)
+```
+
+Now you can create URL requests like this:
+
+```swift
+
+let url = motcV2.bike.availability.city(.tainan)
+
+let sub = URLSession.shared
+    .dataTaskPublisher(for: Paths.motcV2.bike.availability.city(.tainan))
+    .map(\.data)
+    .sink { completion in
+
+        print(completion)
+        expectation.fulfill()
+
+    } receiveValue: { data in
+
+        print(data)
+    }
+```
+
+If your endpoint is a `DecodableEndpoint`, you can create typed `URLSessionDataTask` and publishers like this:
+
+```swift
 extension City: DecodableEndpoint {
     
     typealias Value = [ValueItem]
@@ -64,48 +98,17 @@ extension City: DecodableEndpoint {
         return JSONDecoder()
     }
 }
-```
-
-Declare a builder:
-
-```swift
-
-let motcV2: PathBuilder<URLRequest, MOTCV2> = {
-    var components = URLComponents()
-    components.scheme = "https"
-    components.host = "ptx.transportdata.tw"
-    components.path = "/MOTC/v2"
-    let url = components.url!
-    var request = URLRequest(url: url)
-    request.setValue(
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15",
-        forHTTPHeaderField: "User-Agent"
-    )
-    return .init(path: request)
-}()
-```
-
-Now you can create URL requests like this:
-
-```swift
-
-let request = motcV2.bike.availability.city(.tainan).build()
-```
-
-If your endpoint is a `DecodableEndpoint`, you can call create typed `URLSessionDataTask` and publishers like this:
-
-```swift
 
 let sub = URLSession.shared
-    .dataTaskPublisher(for: Paths.motcV2.bike.availability.city(.tainan))
+    .decodedDataTaskPublisher(for: Paths.motcV2.bike.availability.city(.tainan))
     .sink { completion in
 
         print(completion)
         expectation.fulfill()
 
-    } receiveValue: { value in
+    } receiveValue: { decodedValue in
 
-        print(value)
+        print(decodedValue)
     }
 ```
 
