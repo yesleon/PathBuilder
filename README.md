@@ -14,7 +14,7 @@ Write this:
 ```swift
 let motcV2 = PathBuilder(path: url, modelType: MOTCV2.self)
 
-let endpointRequest: URL = motcV2.bike.availability.city(.tainan)
+let endpoint: URL = motcV2.bike.availability.city(.tainan)
 ```
 
 Autocomplete fully supported!
