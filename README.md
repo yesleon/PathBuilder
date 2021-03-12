@@ -71,10 +71,12 @@ Now you can create URL requests like this:
 
 ```swift
 
-let url = motcV2.bike.availability.city(.tainan)
+let url: URL = motcV2.bike.availability.city(.tainan)
+
+// Or...
 
 let sub = URLSession.shared
-    .dataTaskPublisher(for: Paths.motcV2.bike.availability.city(.tainan))
+    .dataTaskPublisher(for: motcV2.bike.availability.city(.tainan))
     .map(\.data)
     .sink { completion in
 
