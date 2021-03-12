@@ -1,6 +1,6 @@
 # PathBuilder
 
-Model the API endpoints with Swift types.
+Model API endpoints with Swift types.
 
 Instead of this:
 
