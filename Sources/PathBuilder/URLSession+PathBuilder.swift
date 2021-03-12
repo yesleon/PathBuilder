@@ -29,7 +29,7 @@ public protocol DecodableEndpoint: Endpoint {
 public extension URLSession {
     
     @available(iOS 13.0, OSX 10.15, *)
-    func dataTask<E: DecodableEndpoint>(
+    func decodedDataTask<E: DecodableEndpoint>(
         with endpoint: PathBuilder<URL, E>,
         completionHandler: @escaping (E.Value?, URLResponse?, Error?) -> Void
     ) -> URLSessionDataTask {
@@ -47,7 +47,7 @@ public extension URLSession {
     }
     
     @available(iOS 13.0, OSX 10.15, *)
-    func dataTask<E: DecodableEndpoint>(
+    func decodedDataTask<E: DecodableEndpoint>(
         with endpoint: PathBuilder<URLRequest, E>,
         completionHandler: @escaping (E.Value?, URLResponse?, Error?) -> Void
     ) -> URLSessionDataTask {
@@ -65,7 +65,7 @@ public extension URLSession {
     }
     
     @available(iOS 13.0, OSX 10.15, *)
-    func dataTaskPublisher<E: DecodableEndpoint>(
+    func decodedDataTaskPublisher<E: DecodableEndpoint>(
         for endpoint: PathBuilder<URL, E>
     ) -> Publishers.Decode<Publishers.MapKeyPath<URLSession.DataTaskPublisher, Data>, E.Value, E.Decoder> {
         
@@ -76,7 +76,7 @@ public extension URLSession {
     }
     
     @available(iOS 13.0, OSX 10.15, *)
-    func dataTaskPublisher<E: DecodableEndpoint>(
+    func decodedDataTaskPublisher<E: DecodableEndpoint>(
         for endpoint: PathBuilder<URLRequest, E>
     ) -> Publishers.Decode<Publishers.MapKeyPath<URLSession.DataTaskPublisher, Data>, E.Value, E.Decoder> {
         
