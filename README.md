@@ -89,3 +89,17 @@ let sub = URLSession.shared
         print(value)
     }
 ```
+
+`PathBuilder` will use the lowercased type name as its url component string. If you want to use other things, conform the type to `PathComponentProviding`:
+
+```swift
+
+struct Bike: PathComponentProviding {
+    
+    static var pathComponent: String {
+        return "\(self)"
+    }
+    
+    var availability: Availability
+}
+```
