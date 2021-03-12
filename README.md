@@ -1,5 +1,22 @@
 # PathBuilder
 
+Model the API endpoints with Swift types.
+
+Instead of this:
+
+```swift
+let url = URL(string: "https://ptx.transportdata.tw/MOTC/v2/Bike/Availability/Tainan")!
+
+```
+
+Write this:
+
+```swift
+let url = Paths.motcV2.bike.availability.city(.tainan).build()
+```
+
+Autocomplete fully supported!
+
 ## Usage
 
 For an endpoint like `https://ptx.transportdata.tw/MOTC/v2/Bike/Availability/Tainan`, define a root type first:
