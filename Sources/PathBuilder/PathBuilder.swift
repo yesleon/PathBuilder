@@ -1,42 +1,50 @@
-public protocol Base {
-    associatedtype Path
-    static var basePath: Path { get }
-}
-public protocol PathStringProviding {
-    static var pathString: String { get }
-}
-public protocol Endpoint {
-    associatedtype Value: Decodable
+
+public protocol PathComponentProviding {
+    static var pathComponent: String { get }
 }
 
-public protocol PathStringAppendable {
-    func appendingPathString(_ string: String) -> Self
+public protocol Endpoint { }
+
+public protocol PathComponentAppending {
+    func appendingPathComponent(_ pathComponent: String) -> Self
 }
+
 @dynamicMemberLookup
-public struct PathBuilder<Path: PathStringAppendable, Model> {
-    private let _path: Path
-    public init(path: Path) {
+public struct PathBuilder<P: PathComponentAppending, Model> {
+    
+    private let _path: P
+    
+    public init(path: P) {
         self._path = path
     }
-    subscript<NewModel>(dynamicMember dynamicMember: KeyPath<Model, NewModel>) -> PathBuilder<Path, NewModel> {
-        if let T = NewModel.self as? PathStringProviding.Type {
-            return .init(path: _path.appendingPathString(T.pathString))
+    
+    subscript<NewModel>(
+        dynamicMember dynamicMember: KeyPath<Model, NewModel>
+    ) -> PathBuilder<P, NewModel> {
+        
+        let pathComponent: String
+        if let T = NewModel.self as? PathComponentProviding.Type {
+            pathComponent = T.pathComponent
+        } else {
+            pathComponent = "\(NewModel.self)".lowercased()
         }
-        return .init(path: _path.appendingPathString("\(NewModel.self)".lowercased()))
+        let newPath = _path.appendingPathComponent(pathComponent)
+        return PathBuilder<P, NewModel>(path: newPath)
     }
-    subscript<NewModel: RawRepresentable>(dynamicMember dynamicMember: KeyPath<Model, NewModel>) -> (NewModel) -> PathBuilder<Path, NewModel> where NewModel.RawValue == String {
+    
+    subscript<NewModel: RawRepresentable>(
+        dynamicMember dynamicMember: KeyPath<Model, NewModel>
+    ) -> (NewModel) -> PathBuilder<P, NewModel> where NewModel.RawValue == String {
+        
         return { newModel in
-            return .init(path: _path.appendingPathString(newModel.rawValue))
+            let newPath = _path.appendingPathComponent(newModel.rawValue)
+            return PathBuilder<P, NewModel>(path: newPath)
         }
     }
 }
-extension PathBuilder where Model: Base {
-    init(baseType: Model.Type) where Model.Path == Path {
-        self.init(path: Model.basePath)
-    }
-}
+
 extension PathBuilder where Model: Endpoint {
-    func build() -> Path {
+    func build() -> P {
         return _path
     }
 }

@@ -1,42 +1,40 @@
 import XCTest
 @testable import PathBuilder
 
-protocol Uppercased: PathStringProviding { }
+protocol Uppercased: PathComponentProviding { }
 extension Uppercased {
-    static var pathString: String { "\(self)" }
+    static var pathComponent: String { "\(self)" }
 }
 
-extension URL: PathStringAppendable {
-    public func appendingPathString(_ string: String) -> URL {
-        return self.appendingPathComponent(string)
-    }
-}
-extension URLComponents: PathStringAppendable {
-    public func appendingPathString(_ string: String) -> URLComponents {
+extension URL: PathComponentAppending { }
+extension URLComponents: PathComponentAppending {
+    public func appendingPathComponent(_ pathComponent: String) -> URLComponents {
         var components = self
         components.path.append("/")
-        components.path.append(string)
+        components.path.append(pathComponent)
         return components
+    }
+}
+extension String: PathComponentAppending {
+    
+    public func appendingPathComponent(_ pathComponent: String) -> String {
+        return self + "/" + pathComponent
     }
 }
 
 enum PathBuilders {
-    static let motcV2 = PathBuilder(baseType: MOTCV2.self)
-}
-struct MOTCV2: Base {
-    static var basePath: URLComponents {
+    static let motcV2: PathBuilder<URLComponents, MOTCV2> = {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "ptx.transportdata.tw"
         components.path = "/MOTC/v2"
-        return components
-    }
-    
+        return .init(path: components)
+    }()
+    static let motcV2String = PathBuilder<String, MOTCV2>(path: "https://ptx.transportdata.tw/MOTC/v2")
+}
+struct MOTCV2 {
     var bus: Bus
     var bike: Bike
-}
-extension PathBuilder where Path == URLComponents, Model == MOTCV2 {
-    static let base = PathBuilder(baseType: MOTCV2.self)
 }
 
 struct Bus: Uppercased {
@@ -70,11 +68,11 @@ struct Streaming {
     }
 }
 
-struct Bike {
+struct Bike: Uppercased {
     var availability: Availability
 }
 
-struct Availability {
+struct Availability: Uppercased {
     var city: City
     enum City: String, Endpoint {
         typealias Value = [ValueItem]
@@ -102,12 +100,9 @@ struct Availability {
 final class PathBuilderTests: XCTestCase {
     var sub: Any?
     func testExample() {
-        var components = PathBuilders.motcV2.bike.availability.city(.tainan).build()
-        components.queryItems = [
-            .init(name: "$top", value: "3")
-        ]
-        
-        print(components.url!)
+        let path = PathBuilders.motcV2String.bike.availability.city(.tainan).build()
+  
+        print(path)
         
 //        url.motc.v2.bus.route.city.cityID("Tainan")
 //        let builder = URLBuilder<PTXBase>(url: url)
