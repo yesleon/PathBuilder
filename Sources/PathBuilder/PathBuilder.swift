@@ -19,7 +19,7 @@ public struct PathBuilder<P: PathComponentAppending, Model> {
         self._path = path
     }
     
-    subscript<NewModel>(
+    public subscript<NewModel>(
         dynamicMember dynamicMember: KeyPath<Model, NewModel>
     ) -> PathBuilder<P, NewModel> {
         
@@ -33,7 +33,7 @@ public struct PathBuilder<P: PathComponentAppending, Model> {
         return PathBuilder<P, NewModel>(path: newPath)
     }
     
-    subscript<NewModel: RawRepresentable>(
+    public subscript<NewModel: RawRepresentable>(
         dynamicMember dynamicMember: KeyPath<Model, NewModel>
     ) -> (NewModel) -> PathBuilder<P, NewModel> where NewModel.RawValue == String {
         
@@ -43,7 +43,7 @@ public struct PathBuilder<P: PathComponentAppending, Model> {
         }
     }
     
-    subscript<NewModel: Endpoint>(
+    public subscript<NewModel: Endpoint>(
         dynamicMember dynamicMember: KeyPath<Model, NewModel>
     ) -> P {
         
@@ -57,7 +57,7 @@ public struct PathBuilder<P: PathComponentAppending, Model> {
         return newPath
     }
     
-    subscript<NewModel: RawRepresentable & Endpoint>(
+    public subscript<NewModel: RawRepresentable & Endpoint>(
         dynamicMember dynamicMember: KeyPath<Model, NewModel>
     ) -> (NewModel) -> P where NewModel.RawValue == String {
         
@@ -70,7 +70,7 @@ public struct PathBuilder<P: PathComponentAppending, Model> {
 
 extension PathBuilder where Model: Endpoint {
     
-    func build() -> P {
+    public func build() -> P {
         return _path
     }
 }
