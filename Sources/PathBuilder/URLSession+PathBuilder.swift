@@ -19,7 +19,7 @@ extension URLRequest: PathComponentAppending {
     }
 }
 
-@available(iOS 13.0, OSX 10.15, *)
+
 public protocol DecodableEndpoint: Endpoint {
     associatedtype Value: Decodable
     associatedtype Decoder: TopLevelDecoder where Decoder.Input == Data
@@ -28,7 +28,6 @@ public protocol DecodableEndpoint: Endpoint {
 
 public extension URLSession {
     
-    @available(iOS 13.0, OSX 10.15, *)
     func decodedDataTask<E: DecodableEndpoint>(
         with endpoint: PathBuilder<URL, E>,
         completionHandler: @escaping (E.Value?, URLResponse?, Error?) -> Void
@@ -46,7 +45,7 @@ public extension URLSession {
         }
     }
     
-    @available(iOS 13.0, OSX 10.15, *)
+    
     func decodedDataTask<E: DecodableEndpoint>(
         with endpoint: PathBuilder<URLRequest, E>,
         completionHandler: @escaping (E.Value?, URLResponse?, Error?) -> Void
@@ -64,7 +63,7 @@ public extension URLSession {
         }
     }
     
-    @available(iOS 13.0, OSX 10.15, *)
+    
     func decodedDataTaskPublisher<E: DecodableEndpoint>(
         for endpoint: PathBuilder<URL, E>
     ) -> Publishers.Decode<Publishers.MapKeyPath<URLSession.DataTaskPublisher, Data>, E.Value, E.Decoder> {
@@ -75,7 +74,7 @@ public extension URLSession {
             .decode(type: E.Value.self, decoder: E.defaultDecoder)
     }
     
-    @available(iOS 13.0, OSX 10.15, *)
+    
     func decodedDataTaskPublisher<E: DecodableEndpoint>(
         for endpoint: PathBuilder<URLRequest, E>
     ) -> Publishers.Decode<Publishers.MapKeyPath<URLSession.DataTaskPublisher, Data>, E.Value, E.Decoder> {
